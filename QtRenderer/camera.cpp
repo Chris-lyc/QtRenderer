@@ -25,7 +25,6 @@ Matrix Camera::getViewMatrix() {
 
 Matrix Camera::getPerspectiveMatrix() {
     return perspective(FOVY, aspect, NEAR, FAR);
-    //return projection(-1.f / (position - target).norm());
 }
 
 Matrix Camera::getOrthoMatrix() {

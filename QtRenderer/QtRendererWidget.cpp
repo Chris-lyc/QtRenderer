@@ -119,10 +119,7 @@ void QtRendererWidget::render() {
 		camera->setPosition(lightDir);
 		RenderInstance::getInstance().depthShader->Model_ = Matrix::identity();
 		RenderInstance::getInstance().depthShader->View_ = camera->getViewMatrix();
-		//RenderInstance::getInstance().depthShader->Projection_ = Matrix::identity();
 		RenderInstance::getInstance().depthShader->Projection_ = camera->getPerspectiveMatrix();
-		//RenderInstance::getInstance().depthShader->Projection_ = camera.getOrthoMatrix();
-		//RenderInstance::getInstance().depthShader->Projection_ = ortho(-1.f, 1.f, -1.f, 1.f, -NEAR, -FAR);
 		RenderInstance::getInstance().depthShader->ViewPort_ = viewport(0, 0, width, height);
 		RenderInstance::getInstance().depthShader->eye = camera->getPosition();
 		RenderInstance::getInstance().depthShader->light_dir = lightDir;
@@ -131,7 +128,6 @@ void QtRendererWidget::render() {
 	RenderInstance::getInstance().colorShader->Model_= Matrix::identity();
 	RenderInstance::getInstance().colorShader->View_ = camera->getViewMatrix();
 	RenderInstance::getInstance().colorShader->Projection_ = camera->getPerspectiveMatrix();
-	//RenderInstance::getInstance().colorShader->Projection_ = ortho(-width / 2.f, width / 2.f, -height / 2.f, height / 2.f, NEAR, FAR);
 	RenderInstance::getInstance().colorShader->ViewPort_ = viewport(0, 0, width, height);
 	RenderInstance::getInstance().colorShader->eye = camera->getPosition();
 	RenderInstance::getInstance().colorShader->light_dir = lightDir;

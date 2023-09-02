@@ -21,6 +21,4 @@ private:
     void loadModel(std::string path);
     void processNode(aiNode* node, const aiScene* scene);
     Mesh processMesh(aiMesh* mesh, const aiScene* scene);
-    //void loadTexture(std::string filename, const char* suffix, Texture& img);
-    //int loadMaterialTextures(Mesh& mesh, aiMaterial* mat, aiTextureType type);
 };

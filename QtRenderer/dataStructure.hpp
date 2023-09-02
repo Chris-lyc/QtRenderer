@@ -1,7 +1,6 @@
 #pragma once
 
 #include "geometry.h"
-//#include "tgaimage.h"
 
 using Color = Vec3f;
 
@@ -13,7 +12,6 @@ enum TextureType {
 };
 
 struct Buffer {
-	//std::vector<float> data;
 	float* data;
 	int width;
 	int height;
@@ -38,8 +36,4 @@ struct Fragment {
 	Vec2f uvCoord;
 
 	Vec3f bar;
-	//Vec3f normal;
-	//Color diffuse;
-	//float specular;
-	//mat<4, 4, float> uniform_Mshadow; // transform framebuffer screen coordinates to shadowbuffer screen coordinates
 };

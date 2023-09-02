@@ -36,20 +36,15 @@ Vec3f RenderInstance::barycentric(Vec2f* pts, Vec2f P) {
 }
 
 void RenderInstance::constructFragment(std::vector<Vertex>& triangle, Vec3f& bar, Color& color, Fragment& fragment) {
-    //mat<3, 3, float> screenCoordMat;
     for (int nthvert = 0; nthvert < triangle.size(); ++nthvert) {
         fragment.varying_uv.set_col(nthvert, triangle[nthvert].uvCoord);
         fragment.varying_nrm.set_col(nthvert, triangle[nthvert].normal);
         fragment.varying_tri.set_col(nthvert, triangle[nthvert].screenCoord);
-        //screenCoordMat.set_col(nthvert, triangle[nthvert].screenCoord);
     }
     fragment.bar = bar;
     fragment.color = color;
     fragment.screenCoord = fragment.varying_tri * bar;
     fragment.uvCoord = fragment.varying_uv * bar;
-    //fragment.normal = normalmap_.sample2D(fragment.uvCoord);
-    //fragment.diffuse = diffusemap_.sample2D(fragment.uvCoord);
-    //fragment.specular = specularmap_.sample2D(fragment.uvCoord).x;
 }
 
 void RenderInstance::triangle(std::vector<Vertex>& triangle, std::shared_ptr<Shader>& shader, FrameBuffer& frameBuffer) {
@@ -76,8 +71,6 @@ void RenderInstance::triangle(std::vector<Vertex>& triangle, std::shared_ptr<Sha
             Vec3f bar = barycentric(pts_bar, P);
             if (bar.x < 0 || bar.y < 0 || bar.z < 0)continue;
             float frag_depth = triangle[0].screenCoord.z * bar.x + triangle[1].screenCoord.z * bar.y + triangle[2].screenCoord.z * bar.z;
-            //float w = pts[0][3] * bar.x + pts[1][3] * bar.y + pts[2][3] * bar.z;
-            //float frag_depth = z / w;
             Fragment fragment;
 
             if (frameBuffer.JudgeDepth(P.x, P.y, frag_depth)) {
@@ -85,17 +78,9 @@ void RenderInstance::triangle(std::vector<Vertex>& triangle, std::shared_ptr<Sha
 
                 bool discard = shader->fragment(fragment);
                 if (!discard) {
-                    //zbuffer.set(P.x, P.y, TGAColor(frag_depth));
                     frameBuffer.SetPixel(P.x, P.y, fragment.color);
                 }
             }
-            //if (frag_depth > zbuffer.get(P.x,P.y)[0]) {
-            //    bool discard = shader.fragment(bar, color);
-            //    if (!discard) {
-            //        zbuffer.set(P.x, P.y, TGAColor(frag_depth));
-            //        image.set(P.x, P.y, color);
-            //    }
-            //}
         }
     }
 }
@@ -106,22 +91,6 @@ void RenderInstance::processTriangle(std::vector<Vertex> tri, std::shared_ptr<Sh
         shader->vertex(tri[i]);
     }
     triangle(tri, shader, frameBuffer);
-
-    //tbb::parallel_for(tbb::blocked_range<rsize_t>(0, tri.size()), [&](tbb::blocked_range<size_t> r) {
-//    for (size_t i = r.begin(); i < r.end(); ++i) {
-//        shader->vertex(tri[i]);
-//    }
-//});
-
-    //std::vector<Triangle> completedTriangleList = ClipTriangle(tri);
-    //for (auto& ctri : completedTriangleList)
-    //{
-    //    ExecutePerspectiveDivision(ctri);
-    //    ConvertToScreen(ctri);
-    //    if (renderMode == FACE)RasterizationTriangle(ctri);
-    //    else if (renderMode == EDGE) WireframedTriangle(ctri);
-    //    else if (renderMode == VERTEX) PointedTriangle(ctri);
-    //}
 }
 
 
@@ -133,23 +102,15 @@ void RenderInstance::render() {
         assert(i + 1 < indices.size() && i + 2 < indices.size());
         triangles.push_back({ vertices.at(indices.at(i)), vertices.at(indices.at(i + 1)), vertices.at(indices.at(i + 2)) });
     }
-    //static_cast<PhongShader*>(colorShader.get())->diffusemap_ = diffusemap_;
-    //static_cast<PhongShader*>(colorShader.get())->normalmap_ = normalmap_;
-    //static_cast<PhongShader*>(colorShader.get())->specularmap_ = specularmap_;
 
     std::static_pointer_cast<PhongShader>(colorShader)->diffusemap_ = diffusemap_;
     std::static_pointer_cast<PhongShader>(colorShader)->normalmap_ = normalmap_;
     std::static_pointer_cast<PhongShader>(colorShader)->specularmap_ = specularmap_;
-    //std::cout << colorShader.use_count() << std::endl;
-    //colorShader->loadTexture(diffusemap_);
-    //colorShader->loadTexture(normalmap_);
-    //colorShader->loadTexture(specularmap_);
     
 
     if (multiThread) {
         if (useShadow) {
             dynamic_cast<DepthShader*>(depthShader.get())->depth = depth;
-            //dynamic_cast<PhongShader*>(colorShader.get())->depth = depth;
             tbb::parallel_for(tbb::blocked_range<size_t>(0, triangles.size()), [&](tbb::blocked_range<size_t> r) {
                 for (size_t i = r.begin(); i < r.end(); i++) {
                     processTriangle(triangles[i], depthShader,shadowFrameBuffer);
@@ -181,13 +142,6 @@ void RenderInstance::render() {
             processTriangle(triangles[i], colorShader, colorFrameBuffer);
         }
     }
-    //std::cout << model->nfaces() << " faces finish!" << std::endl;
-    //frameBuffer.SaveImage("output/test.png");
-    //Image.flip_vertically(); // i want to have the origin at the left bottom corner of the image
-    //Image.write_tga_file("output/output.tga");
-    //zbuffer.flip_vertically();
-    //zbuffer.write_tga_file("output/zbuffer.tga");
-    //delete model;
 }
 
 void RenderInstance::saveImage(QString& filePath) {

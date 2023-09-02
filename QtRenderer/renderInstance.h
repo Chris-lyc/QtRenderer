@@ -15,10 +15,6 @@ public:
 	Texture* diffusemap_;
 	Texture* normalmap_;
 	Texture* specularmap_;
-	//std::shared_ptr<Texture> diffusemap_;
-	//std::shared_ptr<Texture> normalmap_;
-	//std::shared_ptr<Texture> specularmap_;
-	//std::unique_ptr<Shader> colorShader;
 	std::shared_ptr<Shader> colorShader;
 	std::shared_ptr<Shader> depthShader;
 
