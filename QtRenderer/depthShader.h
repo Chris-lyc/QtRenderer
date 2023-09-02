@@ -4,9 +4,10 @@
 
 class DepthShader :public Shader {
 public:
-    mat<3, 3, float> varying_tri;
-    DepthShader():Shader() {};
+    //mat<3, 3, float> varying_tri;
+    float depth;
+    DepthShader(){};
     virtual ~DepthShader() {};
-    virtual Vec4f vertex(int iface, int nthvert);
-    virtual bool fragment(Vec3f bar, TGAColor& color);
+    virtual bool vertex(Vertex& vertex);
+    virtual bool fragment(Fragment& fragment);
 };

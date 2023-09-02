@@ -3,6 +3,7 @@
 #include <QtWidgets/QMainWindow>
 #include "ui_QtRenderer.h"
 #include "QtRendererWidget.h"
+#include <QToolButton>
 
 class QtRenderer : public QMainWindow
 {
@@ -15,6 +16,10 @@ public:
     QToolBar* pToolBar;
     QAction* Action_SaveImage;
     QAction* Action_LoadModel;
+    QToolButton* Button_ShadowMenu;
+    QMenu* Menu_ShadowMenu;
+    QAction* Action_ShadowON;
+    QAction* Action_ShadowOFF;
     
     void Create_Action();
     void Creat_ToolBar();
@@ -27,4 +32,6 @@ private:
 
     void on_action_LoadModel_trigger();
     void on_action_SaveImage_trigger();
+    void on_action_ShdowON_trigger();
+    void on_action_ShadowOFF_trigger();
 };

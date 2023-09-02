@@ -245,6 +245,7 @@ float radians(float angle);
 
 Matrix lookat(Vec3f position, Vec3f target, Vec3f up);
 Matrix perspective(float fovy, float aspect, float near, float far);
+Matrix ortho(float left, float right, float bottom, float top, float near, float far);
 Matrix projection(float coeff);
 
 #endif //__GEOMETRY_H__

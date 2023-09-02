@@ -1,7 +1,7 @@
 #include "mesh.h"
-#include "scene.h"
+#include "renderInstance.h"
 void Mesh::draw() {
-	Scene::getInstance().vertices = vertices;
-	Scene::getInstance().indices = indices;
-	Scene::getInstance().render();
+	RenderInstance::getInstance().vertices = vertices;
+	RenderInstance::getInstance().indices = indices;
+	RenderInstance::getInstance().render();
 }

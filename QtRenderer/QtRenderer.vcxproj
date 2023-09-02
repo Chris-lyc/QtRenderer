@@ -107,16 +107,14 @@
     <ClCompile Include="mesh.cpp" />
     <ClCompile Include="phongShader.cpp" />
     <ClCompile Include="QtRendererWidget.cpp" />
-    <ClCompile Include="scene.cpp" />
+    <ClCompile Include="renderInstance.cpp" />
     <ClCompile Include="stb_image.cpp" />
     <ClCompile Include="texture.cpp" />
-    <ClCompile Include="tgaimage.cpp" />
     <QtRcc Include="QtRenderer.qrc" />
     <QtUic Include="QtRenderer.ui" />
     <QtMoc Include="QtRenderer.h" />
     <ClCompile Include="geometry.cpp" />
     <ClCompile Include="model.cpp" />
-    <ClCompile Include="our_gl.cpp" />
     <ClCompile Include="QtRenderer.cpp" />
     <ClCompile Include="main.cpp" />
     <QtUic Include="QtRendererWidget.ui" />
@@ -129,13 +127,11 @@
     <ClInclude Include="geometry.h" />
     <ClInclude Include="mesh.h" />
     <ClInclude Include="model.h" />
-    <ClInclude Include="our_gl.h" />
     <ClInclude Include="phongShader.h" />
     <QtMoc Include="QtRendererWidget.h" />
-    <ClInclude Include="scene.h" />
+    <ClInclude Include="renderInstance.h" />
     <ClInclude Include="shader.hpp" />
     <ClInclude Include="texture.h" />
-    <ClInclude Include="tgaimage.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Condition="Exists('$(QtMsBuild)\qt.targets')">

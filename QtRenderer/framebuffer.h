@@ -1,6 +1,6 @@
 #pragma once
 
-#include "tgaimage.h"
+#include "dataStructure.hpp"
 #include <Qstring>
 #include <QImage>
 #include <QColor>
@@ -11,15 +11,16 @@ class FrameBuffer
 public:
     FrameBuffer(int _w, int _h);
     bool JudgeDepth(int x, int y, float z);
-    void SetPixel(int x, int y, TGAColor color);
+    void SetPixel(int x, int y, Color color);
     bool SaveImage(QString filePath);
-    void ClearBuffer(TGAColor color);
-    QImage& GetImage() { return colorBuffer; }
+    void ClearBuffer(Color color);
+    QImage& GetImage();
+    Buffer* GetDepthBuffer();
     int get_width();
     int get_height();
 private:
     int width;
     int height;
-    std::vector<float> depthBuffer;
+    Buffer depthBuffer;
     QImage colorBuffer;
 };

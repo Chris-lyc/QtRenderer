@@ -1,9 +1,0 @@
-﻿  QtRenderer.cpp
-  QtRendererWidget.cpp
-  main.cpp
-  mesh.cpp
-  model.cpp
-  scene.cpp
-  moc_QtRenderer.cpp
-  moc_QtRendererWidget.cpp
-  QtRenderer.vcxproj -> D:\CODE\QtRenderer\x64\Debug\QtRenderer.exe

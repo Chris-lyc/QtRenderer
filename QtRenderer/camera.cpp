@@ -23,9 +23,22 @@ Matrix Camera::getViewMatrix() {
     return lookat(position, target, UP);
 }
 
-Matrix Camera::getProjMatrix() {
+Matrix Camera::getPerspectiveMatrix() {
     return perspective(FOVY, aspect, NEAR, FAR);
     //return projection(-1.f / (position - target).norm());
+}
+
+Matrix Camera::getOrthoMatrix() {
+    float tanHalfFov = tanf(FOVY / 2.0f);
+    float orthoBottom = -tanHalfFov * NEAR;
+    float orthoTop = tanHalfFov * NEAR;
+    float orthoLeft = -tanHalfFov * aspect * NEAR;
+    float orthoRight = tanHalfFov * aspect * NEAR;
+    return ortho(orthoLeft, orthoRight, orthoBottom, orthoTop, -NEAR, -FAR);
+}
+
+void Camera::setPosition(Vec3f pos) {
+    this->position = pos;
 }
 
 void Camera::rotateAroundTarget(Vec2f motion) {

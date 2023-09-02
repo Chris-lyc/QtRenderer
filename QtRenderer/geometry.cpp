@@ -42,6 +42,17 @@ Matrix perspective(float fovy, float aspect, float near, float far) {
     return m;
 }
 
+Matrix ortho(float left, float right, float bottom, float top, float near, float far) {
+    Matrix m = Matrix::identity();
+    m[0][0] = 2.f / (right - left);
+    m[0][3] = (left + right) / (left - right);
+    m[1][1] = 2.f / (top - bottom);
+    m[1][3] = (bottom + top) / (bottom - top);
+    m[2][2] = 2.f / (near - far);
+    m[2][3] = (far + near) / (far - near);
+    return m;
+}
+
 Matrix projection(float coeff) {
     Matrix Projection = Matrix::identity();
     Projection[3][2] = coeff;

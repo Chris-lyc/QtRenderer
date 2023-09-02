@@ -2,7 +2,6 @@
 
 #include <vector>
 #include "geometry.h"
-#include "tgaimage.h"
 #include "mesh.h"
 #include "texture.h"
 #include <assimp/Importer.hpp>
@@ -15,7 +14,6 @@ public:
     void draw();
 private:
     std::vector<Mesh> meshes;
-    std::vector<Texture> textures;
     Texture diffusemap_;
     Texture normalmap_;
     Texture specularmap_;

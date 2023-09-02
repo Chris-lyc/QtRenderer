@@ -1,5 +1,5 @@
 #include "model.h"
-#include "scene.h"
+#include "renderInstance.h"
 #include <QString>
 
 void Model::loadModel(std::string path) {
@@ -13,9 +13,9 @@ void Model::loadModel(std::string path) {
 
 	processNode(scene->mRootNode, scene);
 
-	diffusemap_.loadImage(path, "_diffuse.tga", Texture::DIFFUSE);
-	normalmap_.loadImage(path, "_nm_tangent.tga", Texture::NORMAL);
-	specularmap_.loadImage(path, "_spec.tga", Texture::SPECLUAR);
+	diffusemap_.loadImage(path, "_diffuse.tga", DIFFUSE);
+	normalmap_.loadImage(path, "_nm_tangent.tga", NORMAL);
+	specularmap_.loadImage(path, "_spec.tga", SPECLUAR);
 }
 
 void Model::processNode(aiNode* node, const aiScene* scene){
@@ -61,9 +61,9 @@ Mesh Model::processMesh(aiMesh* mesh, const aiScene* scene){
 }
 
 void Model::draw() {
-	Scene::getInstance().diffusemap_ = diffusemap_;
-	Scene::getInstance().normalmap_ = normalmap_;
-	Scene::getInstance().specularmap_ = specularmap_;
+	RenderInstance::getInstance().diffusemap_ = &diffusemap_;
+	RenderInstance::getInstance().normalmap_ = &normalmap_;
+	RenderInstance::getInstance().specularmap_ = &specularmap_;
 	for (int i = 0; i < meshes.size(); ++i) {
 		meshes[i].draw();
 	}

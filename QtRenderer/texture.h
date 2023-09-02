@@ -1,25 +1,20 @@
 #pragma once
 
-#include "tgaimage.h"
 #include "geometry.h"
-
+#include "stb_image.h"
+#include "dataStructure.hpp"
 
 class Texture {
 public:
-    enum Type {
-        DEFAULT,
-        DIFFUSE,
-        NORMAL,
-        SPECLUAR
-    };
-    
-    Texture() : width(0), height(0),type(DEFAULT) {};
-    void loadImage(std::string filename, const char* suffix, Type type);
-    Vec3f sample2D(Vec2f uvCoord);
+    Texture() : width(0), height(0), type(DEFAULT), channels(0), map(nullptr) {};
+    ~Texture() { if(map!=NULL)stbi_image_free(map); }
+    TextureType getType();
+    void loadImage(std::string filename, const char* suffix, TextureType type);
+    Color sample2D(Vec2f uvCoord);
 private:
-	TGAImage map;
+    unsigned char* map;
     int width;
     int height;
-    Type type;
-    std::string path;
+    int channels;
+    TextureType type;
 };

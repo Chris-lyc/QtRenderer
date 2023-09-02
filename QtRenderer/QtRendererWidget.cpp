@@ -3,26 +3,28 @@
 #include <QFont>
 
 QtRendererWidget::QtRendererWidget(QWidget* parent) :QWidget(parent),
-width(DEFAULT_WIDTH), height(DEFAULT_HEIGHT), model(nullptr), lastFrameTime(0),
-lightDir(Vec3f(1, 1, 1).normalize()), camera(width * 1.0 / height), lastPos({ 0,0 }), ratio(0.f),
+width(DEFAULT_WIDTH), height(DEFAULT_HEIGHT), depth(DEFAULT_DEPTH), model(nullptr), lastFrameTime(0),
+lightDir(Vec3f(2, 2, 2)), lastPos({ 0,0 }), ratio(0.f),
+useShadow(false),
 ui(new Ui::QtRendererWidget) {
 	ui->setupUi(this);
 	setFixedSize(width, height);
 	ui->FPSLabel->setStyleSheet("background:transparent");
 	ui->FPSLabel->setVisible(false);
+	camera = new Camera(width * 1.f / height);
 	initDevice();
 	connect(&timer, &QTimer::timeout, this, &QtRendererWidget::render);
 	timer.start(1);
 }
 
 void QtRendererWidget::initDevice() {
-	Scene::init(width, height);
+	RenderInstance::init(width, height, depth);
 }
 
 void QtRendererWidget::paintEvent(QPaintEvent* paintevent) {
 	QPainter frameBufferPainter;
 	frameBufferPainter.begin(this);
-	frameBufferPainter.drawImage(0, 0, Scene::getInstance().getBuffer());
+	frameBufferPainter.drawImage(0, 0, RenderInstance::getInstance().getBuffer());
 }
 
 void QtRendererWidget::loadModel(QString filePath) {
@@ -31,7 +33,11 @@ void QtRendererWidget::loadModel(QString filePath) {
 }
 
 void QtRendererWidget::saveImage(QString filePath) {
-	Scene::getInstance().saveImage(filePath);
+	RenderInstance::getInstance().saveImage(filePath);
+}
+
+void QtRendererWidget::setUseShadow(bool use) {
+	this->useShadow = use;
 }
 
 Matrix QtRendererWidget::viewport(int x, int y, int w, int h) {
@@ -81,23 +87,23 @@ void QtRendererWidget::processInput() {
 			motion.y = (motion.y / height);
 			if (currentButtons == Qt::LeftButton)
 			{
-				camera.rotateAroundTarget(motion);
+				camera->rotateAroundTarget(motion);
 			}
 			if (currentButtons == Qt::RightButton)
 			{
-				camera.moveTarget(motion);
+				camera->moveTarget(motion);
 			}
 		}
 		lastPos = currentPos;
 	}
 	if (std::abs(ratio) > 1e-6) {
-		camera.scale(ratio);
+		camera->scale(ratio);
 		ratio = 0.f;
 	}
 }
 
 void QtRendererWidget::render() {
-	Scene::getInstance().clearBuffer();
+	RenderInstance::getInstance().clearBuffer();
 	int nowTime = QTime::currentTime().msecsSinceStartOfDay();
 	if (lastFrameTime != 0)
 	{
@@ -107,12 +113,28 @@ void QtRendererWidget::render() {
 	lastFrameTime = nowTime;
 	if (model == nullptr)return;
 	processInput();
-	Scene::getInstance().shader->Model_= Matrix::identity();
-	Scene::getInstance().shader->View_ = camera.getViewMatrix();
-	Scene::getInstance().shader->Projection_ = camera.getProjMatrix();
-	Scene::getInstance().shader->ViewPort_ = viewport(0, 0, width, height);
-	Scene::getInstance().shader->eye = camera.getPosition();
-	Scene::getInstance().shader->light_dir = lightDir;
+	RenderInstance::getInstance().setUseShadow(useShadow);
+	if (useShadow) {
+		Vec3f camPos = camera->getPosition();
+		camera->setPosition(lightDir);
+		RenderInstance::getInstance().depthShader->Model_ = Matrix::identity();
+		RenderInstance::getInstance().depthShader->View_ = camera->getViewMatrix();
+		//RenderInstance::getInstance().depthShader->Projection_ = Matrix::identity();
+		RenderInstance::getInstance().depthShader->Projection_ = camera->getPerspectiveMatrix();
+		//RenderInstance::getInstance().depthShader->Projection_ = camera.getOrthoMatrix();
+		//RenderInstance::getInstance().depthShader->Projection_ = ortho(-1.f, 1.f, -1.f, 1.f, -NEAR, -FAR);
+		RenderInstance::getInstance().depthShader->ViewPort_ = viewport(0, 0, width, height);
+		RenderInstance::getInstance().depthShader->eye = camera->getPosition();
+		RenderInstance::getInstance().depthShader->light_dir = lightDir;
+		camera->setPosition(camPos);
+	}
+	RenderInstance::getInstance().colorShader->Model_= Matrix::identity();
+	RenderInstance::getInstance().colorShader->View_ = camera->getViewMatrix();
+	RenderInstance::getInstance().colorShader->Projection_ = camera->getPerspectiveMatrix();
+	//RenderInstance::getInstance().colorShader->Projection_ = ortho(-width / 2.f, width / 2.f, -height / 2.f, height / 2.f, NEAR, FAR);
+	RenderInstance::getInstance().colorShader->ViewPort_ = viewport(0, 0, width, height);
+	RenderInstance::getInstance().colorShader->eye = camera->getPosition();
+	RenderInstance::getInstance().colorShader->light_dir = lightDir;
 	model->draw();
 	update();
 }
