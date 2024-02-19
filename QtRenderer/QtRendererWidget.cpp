@@ -1,21 +1,62 @@
 #include "QtRendererWidget.h"
 #include <QPainter>
-#include <QFont>
+#include <QTime>
 
-QtRendererWidget::QtRendererWidget(QWidget* parent) :QWidget(parent),
-width(DEFAULT_WIDTH), height(DEFAULT_HEIGHT), depth(DEFAULT_DEPTH), model(nullptr), lastFrameTime(0),
-lightDir(Vec3f(2, 2, 2)), lastPos({ 0,0 }), ratio(0.f),
-useShadow(false),
-ui(new Ui::QtRendererWidget) {
+QtRendererWidget::QtRendererWidget(QWidget* parent) : QWidget(parent),
+                                                      width(DEFAULT_WIDTH), height(DEFAULT_HEIGHT), depth(DEFAULT_DEPTH), model(nullptr), lastFrameTime(0),
+                                                      lightDir(Vec3f(2, 2, 2)), lastPos({ 0,0 }), ratio(0.f),
+                                                      useShadow(false), zbufferType(0), multiThread(true),shadingType(0),
+                                                      ui(new Ui::QtRendererWidget), deltaTime(0)
+{
 	ui->setupUi(this);
 	setFixedSize(width, height);
 	ui->FPSLabel->setStyleSheet("background:transparent");
 	ui->FPSLabel->setVisible(false);
 	camera = new Camera(width * 1.f / height);
 	initDevice();
+	displayZbufferType();
+	displayMultiThread();
 	connect(&timer, &QTimer::timeout, this, &QtRendererWidget::render);
 	timer.start(1);
 }
+
+void QtRendererWidget::displayZbufferType()
+{
+	if(zbufferType==0)
+	{
+		std::cout<<"use zbuffer"<<std::endl;
+	}
+	else if(zbufferType==1)
+	{
+		std::cout<<"use scanline zbuffer"<<std::endl;
+	}
+	else if(zbufferType==2)
+	{
+		std::cout<<"use hierarchy zbuffer"<<std::endl;
+	}
+	else if(zbufferType==3)
+	{
+		std::cout<<"use hierarchy zbuffer + octTree"<<std::endl;
+	}
+}
+
+void QtRendererWidget::displayMultiThread()
+{
+	if(multiThread)
+	{
+		std::cout<<"open multiThread"<<std::endl;
+	}
+	else
+	{
+		std::cout<<"close multiThread"<<std::endl;
+	}
+}
+
+void QtRendererWidget::displayTime()
+{
+	std::cout<<"Last frame time cost: "<<deltaTime<<" ms"<<std::endl;
+}
+
 
 void QtRendererWidget::initDevice() {
 	RenderInstance::init(width, height, depth);
@@ -27,9 +68,14 @@ void QtRendererWidget::paintEvent(QPaintEvent* paintevent) {
 	frameBufferPainter.drawImage(0, 0, RenderInstance::getInstance().getBuffer());
 }
 
-void QtRendererWidget::loadModel(QString filePath) {
-	model = new Model(filePath.toStdString());
+void QtRendererWidget::loadModel(std::string filePath) {
+	model = new Model(filePath);
+	model->displayMeshNumber();
 	ui->FPSLabel->setVisible(true);
+
+	RenderInstance& instance=RenderInstance::getInstance();
+	instance.model=model;
+	instance.setTextureToShader();
 }
 
 void QtRendererWidget::saveImage(QString filePath) {
@@ -38,7 +84,27 @@ void QtRendererWidget::saveImage(QString filePath) {
 
 void QtRendererWidget::setUseShadow(bool use) {
 	this->useShadow = use;
+	RenderInstance::getInstance().setUseShadow(use);
 }
+
+void QtRendererWidget::setZbufferType(int type)
+{
+	this->zbufferType=type;
+	RenderInstance::getInstance().setZbufferType(type);
+}
+
+void QtRendererWidget::setMultiThread(bool multiThread)
+{
+	this->multiThread=multiThread;
+	RenderInstance::getInstance().setMultiThread(multiThread);	
+}
+
+void QtRendererWidget::setShadingType(int type)
+{
+	this->shadingType=type;
+	RenderInstance::getInstance().setShadingType(type);
+}
+
 
 Matrix QtRendererWidget::viewport(int x, int y, int w, int h) {
 	Matrix ViewPort = Matrix::identity();
@@ -103,34 +169,54 @@ void QtRendererWidget::processInput() {
 }
 
 void QtRendererWidget::render() {
-	RenderInstance::getInstance().clearBuffer();
+	RenderInstance& instance=RenderInstance::getInstance();
+	instance.clearBuffer();
+	
 	int nowTime = QTime::currentTime().msecsSinceStartOfDay();
 	if (lastFrameTime != 0)
 	{
-		int deltaTime = nowTime - lastFrameTime;
+		deltaTime = nowTime - lastFrameTime;
 		ui->FPSLabel->setText(QStringLiteral("FPS : ") + QString::number(1000.0 / deltaTime, 'f', 0));
 	}
 	lastFrameTime = nowTime;
+
 	if (model == nullptr)return;
+	
 	processInput();
-	RenderInstance::getInstance().setUseShadow(useShadow);
+	
+	// instance.setUseShadow(useShadow);
+	// instance.setZbufferType(zbufferType);
+
+	if(zbufferType==2||zbufferType==3)
+	{
+		instance.clearZPyramid();
+	}
+
+	instance.camera=camera;
+	
 	if (useShadow) {
 		Vec3f camPos = camera->getPosition();
 		camera->setPosition(lightDir);
-		RenderInstance::getInstance().depthShader->Model_ = Matrix::identity();
-		RenderInstance::getInstance().depthShader->View_ = camera->getViewMatrix();
-		RenderInstance::getInstance().depthShader->Projection_ = camera->getPerspectiveMatrix();
-		RenderInstance::getInstance().depthShader->ViewPort_ = viewport(0, 0, width, height);
-		RenderInstance::getInstance().depthShader->eye = camera->getPosition();
-		RenderInstance::getInstance().depthShader->light_dir = lightDir;
+		
+		instance.depthShader->Model_=Matrix::identity();
+		instance.depthShader->View_ = camera->getViewMatrix();
+		instance.depthShader->Projection_ = camera->getPerspectiveMatrix();
+		instance.depthShader->ViewPort_ = viewport(0, 0, width, height);
+		instance.depthShader->eye = camera->getPosition();
+		instance.depthShader->light_dir = lightDir;
+		
 		camera->setPosition(camPos);
 	}
-	RenderInstance::getInstance().colorShader->Model_= Matrix::identity();
-	RenderInstance::getInstance().colorShader->View_ = camera->getViewMatrix();
-	RenderInstance::getInstance().colorShader->Projection_ = camera->getPerspectiveMatrix();
-	RenderInstance::getInstance().colorShader->ViewPort_ = viewport(0, 0, width, height);
-	RenderInstance::getInstance().colorShader->eye = camera->getPosition();
-	RenderInstance::getInstance().colorShader->light_dir = lightDir;
-	model->draw();
+	
+	instance.colorShader->Model_= Matrix::identity();
+	instance.colorShader->View_ = camera->getViewMatrix();
+	instance.colorShader->Projection_ = camera->getPerspectiveMatrix();
+	instance.colorShader->ViewPort_ = viewport(0, 0, width, height);
+	instance.colorShader->eye = camera->getPosition();
+	instance.colorShader->light_dir = lightDir;
+	
+	// model->draw();
+	instance.render();
+	
 	update();
 }

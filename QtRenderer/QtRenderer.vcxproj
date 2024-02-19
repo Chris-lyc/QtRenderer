@@ -59,9 +59,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'">
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <ClCompile>
-      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);$(Qt_INCLUDEPATH_);includes;ThridParty/includes；includes</AdditionalIncludeDirectories>
-    </ClCompile>
+    <ClCompile />
     <Link>
       <AdditionalLibraryDirectories>libs</AdditionalLibraryDirectories>
       <AdditionalDependencies>%(AdditionalDependencies);$(Qt_LIBS_);assimp.lib</AdditionalDependencies>
@@ -69,11 +67,12 @@
     <PreBuildEvent>
       <Command>xcopy $(SolutionDir)QtRenderer\dlls $(OutDir) /a /F /I /Y /C</Command>
     </PreBuildEvent>
+    <ClCompile>
+      <AdditionalIncludeDirectories>D:\CODE\QtRenderer\QtRenderer\includes;D:\CODE\StudyOpenGL\Breakout\Breakout\includes\Breakout;%(AdditionalIncludeDirectories);$(Qt_INCLUDEPATH_)</AdditionalIncludeDirectories>
+    </ClCompile>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <ClCompile>
-      <AdditionalIncludeDirectories>;includes;ThridParty/includes；includes</AdditionalIncludeDirectories>
-    </ClCompile>
+    <ClCompile />
     <Link>
       <AdditionalLibraryDirectories>libs</AdditionalLibraryDirectories>
       <AdditionalDependencies>kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies);assimp.lib</AdditionalDependencies>
@@ -81,6 +80,9 @@
     <PreBuildEvent>
       <Command>xcopy $(SolutionDir)QtRenderer\dlls $(OutDir) /a /F /I /Y /C</Command>
     </PreBuildEvent>
+    <ClCompile>
+      <AdditionalIncludeDirectories>D:\CODE\QtRenderer\QtRenderer\includes;D:\CODE\StudyOpenGL\Breakout\Breakout\includes\Breakout;%(AdditionalIncludeDirectories);$(Qt_INCLUDEPATH_)</AdditionalIncludeDirectories>
+    </ClCompile>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'" Label="Configuration">
     <ClCompile>
@@ -110,10 +112,17 @@
     <ClCompile Include="camera.cpp" />
     <ClCompile Include="depthShader.cpp" />
     <ClCompile Include="framebuffer.cpp" />
+    <ClCompile Include="Hierarchy Zbuffer\zPyramid.cpp" />
+    <ClCompile Include="Hierarchy Zbuffer\zQuadTreeNode.cpp" />
     <ClCompile Include="mesh.cpp" />
+    <ClCompile Include="OctTree\octTree.cpp" />
+    <ClCompile Include="OctTree\octTreeNode.cpp" />
     <ClCompile Include="phongShader.cpp" />
     <ClCompile Include="QtRendererWidget.cpp" />
     <ClCompile Include="renderInstance.cpp" />
+    <ClCompile Include="Scanline Zbuffer\PolygonList.cpp" />
+    <ClCompile Include="Scanline Zbuffer\PolygonListNode.cpp" />
+    <ClCompile Include="Scanline Zbuffer\ScanlineZbuffer.cpp" />
     <ClCompile Include="stb_image.cpp" />
     <ClCompile Include="texture.cpp" />
     <QtRcc Include="QtRenderer.qrc" />
@@ -131,11 +140,18 @@
     <ClInclude Include="depthShader.h" />
     <ClInclude Include="framebuffer.h" />
     <ClInclude Include="geometry.h" />
+    <ClInclude Include="Hierarchy Zbuffer\zPyramid.h" />
+    <ClInclude Include="Hierarchy Zbuffer\zQuadTreeNode.h" />
     <ClInclude Include="mesh.h" />
     <ClInclude Include="model.h" />
+    <ClInclude Include="OctTree\octTree.h" />
+    <ClInclude Include="OctTree\octTreeNode.h" />
     <ClInclude Include="phongShader.h" />
     <QtMoc Include="QtRendererWidget.h" />
     <ClInclude Include="renderInstance.h" />
+    <ClInclude Include="Scanline Zbuffer\PolygonList.h" />
+    <ClInclude Include="Scanline Zbuffer\PolygonListNode.h" />
+    <ClInclude Include="Scanline Zbuffer\ScanlineZbuffer.h" />
     <ClInclude Include="shader.hpp" />
     <ClInclude Include="texture.h" />
   </ItemGroup>

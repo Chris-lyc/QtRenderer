@@ -2,3 +2,4 @@
 *.pdf
 QtRenderer/output
 x64/
+*.docx

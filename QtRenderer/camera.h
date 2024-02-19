@@ -2,7 +2,7 @@
 
 #include "geometry.h"
 
-static const Vec3f CAMERA_POSITION = { 0, 0, 3 };
+static const Vec3f CAMERA_POSITION = { 0, 0, 8 };
 static const Vec3f CAMERA_TARGET = { 0, 0, 0 };
 static const float NEAR = 0.1f;
 static const float FAR = 100.f;

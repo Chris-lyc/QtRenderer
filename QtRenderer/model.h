@@ -10,14 +10,21 @@
 
 class Model {
 public:
-    Model(std::string path) { loadModel(path); }
-    void draw();
-private:
     std::vector<Mesh> meshes;
-    Texture diffusemap_;
-    Texture normalmap_;
-    Texture specularmap_;
+    Texture* diffusemap_;
+    Texture* normalmap_;
+    Texture* specularmap_;
+    
+    Model(std::string path):diffusemap_(nullptr),normalmap_(nullptr),specularmap_(nullptr)
+    {
+        loadModel(path);
+    }
+    // void draw();
+    void displayMeshNumber();
+    
+private:
     std::string directory;
+    
     void loadModel(std::string path);
     void processNode(aiNode* node, const aiScene* scene);
     Mesh processMesh(aiMesh* mesh, const aiScene* scene);

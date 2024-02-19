@@ -1,6 +1,8 @@
 #include "model.h"
 #include "renderInstance.h"
 #include <QString>
+#include <string>
+#include <fstream>
 
 void Model::loadModel(std::string path) {
 	Assimp::Importer importer;
@@ -10,12 +12,38 @@ void Model::loadModel(std::string path) {
 		return;
 	}
 	directory = path.substr(0, path.find_last_of('/'));
-
+	
 	processNode(scene->mRootNode, scene);
-
-	diffusemap_.loadImage(path, "_diffuse.tga", DIFFUSE);
-	normalmap_.loadImage(path, "_nm_tangent.tga", NORMAL);
-	specularmap_.loadImage(path, "_spec.tga", SPECLUAR);
+	
+	size_t dot = path.find_last_of(".");
+	std::string diffusePath;
+	std::string normalPath;
+	std::string specularPath;
+	if (dot != std::string::npos)
+	{
+		diffusePath = path.substr(0, dot) + std::string("_diffuse.tga");
+		normalPath = path.substr(0, dot) + std::string("_nm_tangent.tga");
+		specularPath = path.substr(0, dot) + std::string("_spec.tga");
+	}
+	
+	std::ifstream diffuseFile(diffusePath.c_str());
+	if(diffuseFile.good())
+	{
+		diffusemap_=new Texture();
+		diffusemap_->loadImage(path, "_diffuse.tga", DIFFUSE);
+	}
+	std::ifstream normalFile(normalPath.c_str());
+	if(normalFile.good())
+	{
+		normalmap_=new Texture();
+		normalmap_->loadImage(path, "_nm_tangent.tga", NORMAL);
+	}
+	std::ifstream specularFile(specularPath.c_str());
+	if(specularFile.good())
+	{
+		specularmap_=new Texture();
+		specularmap_->loadImage(path, "_spec.tga", SPECLUAR);
+	}
 }
 
 void Model::processNode(aiNode* node, const aiScene* scene){
@@ -60,11 +88,16 @@ Mesh Model::processMesh(aiMesh* mesh, const aiScene* scene){
 	return Mesh(vertices, indices);
 }
 
-void Model::draw() {
-	RenderInstance::getInstance().diffusemap_ = &diffusemap_;
-	RenderInstance::getInstance().normalmap_ = &normalmap_;
-	RenderInstance::getInstance().specularmap_ = &specularmap_;
-	for (int i = 0; i < meshes.size(); ++i) {
-		meshes[i].draw();
+// void Model::draw() {
+// 	for (int i = 0; i < meshes.size(); ++i) {
+// 		meshes[i].draw();
+// 	}
+// }
+
+void Model::displayMeshNumber()
+{
+	for(int i=0;i<meshes.size();++i)
+	{
+		std::cout<<"Number of meshes: "<<meshes[i].indexs.size()<<std::endl;
 	}
 }

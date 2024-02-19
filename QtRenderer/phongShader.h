@@ -13,8 +13,8 @@ public:
 
     Buffer* shadowBuffer;
     Matrix uniform_Mshadow; // transform framebuffer screen coordinates to shadowbuffer screen coordinates
-    PhongShader(){};
-    virtual ~PhongShader() {};
+    PhongShader():diffusemap_(nullptr),normalmap_(nullptr),specularmap_(nullptr){}
+    virtual ~PhongShader() {}
     virtual bool vertex(Vertex& veretx);
     virtual bool fragment(Fragment& fragment);
 };

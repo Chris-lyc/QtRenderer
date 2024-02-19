@@ -3,7 +3,6 @@
 #include "ui_QtRendererWidget.h"
 #include <QWidget>
 #include <QTimer>
-#include <QTime>
 #include <QString>
 #include <qevent.h>
 #include "renderInstance.h"
@@ -22,9 +21,13 @@ public:
 	~QtRendererWidget() { delete(ui); delete(model); delete(camera); }
 	void initDevice();
 	void paintEvent(QPaintEvent* paintevent);
-	void loadModel(QString path);
+	void loadModel(std::string path);
 	void saveImage(QString path);
 	void setUseShadow(bool use);
+	void setZbufferType(int type);
+	void setMultiThread(bool multiThread);
+	void setShadingType(int type);
+	
 	Matrix viewport(int x, int y, int w, int h);
 
 	void wheelEvent(QWheelEvent* event);
@@ -32,6 +35,10 @@ public:
 	void mouseMoveEvent(QMouseEvent* event);
 	void mouseReleaseEvent(QMouseEvent* event);
 	void processInput();
+
+	void displayZbufferType();
+	void displayMultiThread();
+	void displayTime();
 public slots:
 	void render();
 
@@ -54,5 +61,10 @@ private:
 
 	float ratio;
 
+	int deltaTime;
+
 	bool useShadow;
+	int zbufferType;
+	bool multiThread;
+	int shadingType;
 };
