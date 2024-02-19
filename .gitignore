@@ -3,3 +3,5 @@
 QtRenderer/output
 x64/
 *.docx
+.idea/
+bin/
