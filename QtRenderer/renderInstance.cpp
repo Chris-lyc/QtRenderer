@@ -211,8 +211,7 @@ float RenderInstance::RenderMinNode(Primitive& primitive, zQuadTreeNode* node, s
             else if(shadingType==1)
             {
                 Fragment fragment;
-                Color color(255.f, 255.f, 255.f);
-                constructFragment(primitive.triangle, bar, color, fragment);
+                constructFragment(primitive.triangle, bar, primitive.color, fragment);
                 bool discard = shader->fragment(fragment);
                 if (!discard)
                 {
